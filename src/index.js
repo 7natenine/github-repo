@@ -1,33 +1,39 @@
 import $ from 'jquery';
+import './index.css';
 
 'use strict';
 
-// const apiKey = '6cffa0f2d84f4aeabf7ec622e910dc4b'
+const apiKey = '6bb77c91056055b9da7aab3dc5001f79a845d177'
 
-const searchURL = 'https://api.github.com/users';
+const searchURL = `https://api.github.com/users/`
 
 
 function formatQueryParams(params) {
-  return `$:{encodeURIComponent(param)}/repo}`
+  return `${params.q}/repos`
 }
 
 function displayResults(responseJson, maxResults) {
   // if there are previous results, remove them
-  console.log(responseJson);
+  console.log(responseJson,'here');
   $('#results-list').empty();
   // iterate through the articles array, stopping at the max number of results
-  for (let i = 0; i < responseJson.articles.length & i<maxResults ; i++){
+
+  let userinfo = `
+  <h4>User: <span class="user">${responseJson[0].owner.login}</span></h4>
+  <h4><span class="user">Total repos: ${responseJson.length}</span></h4>
+  <ul class="results-list"></ul>
+`
+$('#results-list').append(userinfo)
+  for (let i = 0; i < responseJson.length & i<maxResults ; i++){
     // for each video object in the articles
     //array, add a list item to the results 
     //list with the article title, source, author,
     //description, and image
     $('#results-list').append(
-      `<li><h3><a href="${responseJson.articles[i].url}">${responseJson.articles[i].title}</a></h3>
-      <p>${responseJson.articles[i].source.name}</p>
-      <p>By ${responseJson.articles[i].author}</p>
-      <p>${responseJson.articles[i].description}</p>
-      <img src='${responseJson.articles[i].urlToImage}'>
-      </li>`
+      `<div class="result-item"><li><h4>${responseJson[i].name}</h4>
+      <a href="${responseJson[i].html_url}">${responseJson[i].html_url}</a>
+      <p>${responseJson[i].description}</p>
+      </li></div>`
     )};
   //display the results section  
   $('#results').removeClass('hidden');
@@ -39,7 +45,7 @@ function getNews(query, maxResults=10) {
     language: "en",
   };
   const queryString = formatQueryParams(params)
-  const url = searchURL + '/' + queryString;
+  const url = searchURL + queryString;
 
   console.log(url);
 
@@ -48,12 +54,13 @@ function getNews(query, maxResults=10) {
   //     "X-Api-Key": apiKey})
   // };
 
-  // fetch(url, options)
   fetch(url)
     .then(response => {
       if (response.ok) {
+        console.log('res ok')
         return response.json();
       }
+      console.log('throwing error')
       throw new Error(response.statusText);
     })
     .then(responseJson => displayResults(responseJson, maxResults))
