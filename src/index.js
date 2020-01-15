@@ -3,8 +3,6 @@ import './index.css';
 
 'use strict';
 
-const apiKey = '6bb77c91056055b9da7aab3dc5001f79a845d177'
-
 const searchURL = `https://api.github.com/users/`
 
 
@@ -46,13 +44,6 @@ function getNews(query, maxResults=10) {
   };
   const queryString = formatQueryParams(params)
   const url = searchURL + queryString;
-
-  console.log(url);
-
-  // const options = {
-  //   headers: new Headers({
-  //     "X-Api-Key": apiKey})
-  // };
 
   fetch(url)
     .then(response => {
